@@ -8,7 +8,9 @@ app = Flask(__name__)
 def phone_buzz():
 	message = "Welcome to Ejnar's Phone Buzz, Please Enter a Number"
 	response = VoiceResponse()
-	response.say(message)
+	response.say(message, voice='alice')
+	response.pause(1)
+	response.say("test message 2")
 
 	return str(response)
 
