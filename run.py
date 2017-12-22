@@ -5,7 +5,8 @@ from twilio.rest import Client
 from twilio.base.exceptions import TwilioRestException
 from twilio.request_validator import RequestValidator
 import os, sys
-
+from time import sleep
+import thread
 
 ################################
 #Place your Twilio token/sid here if you have not
@@ -14,8 +15,12 @@ TWILIO_AUTH_TOKEN = ''
 TWILIO_ACCOUNT_SID = ''
 #Url for making calls from app
 endpoint_url = 'https://phonebuzz-lendup.herokuapp.com/voice'
+#twilio phone number from your app
+from_phone_number = "+14074104685"
 ################################
 
+
+	
 if not (len(TWILIO_ACCOUNT_SID) == 0 or len(TWILIO_AUTH_TOKEN) == 0):
 	print "Environment Variables Updated"
 	os.environ['TWILIO_AUTH_TOKEN'] = TWILIO_AUTH_TOKEN
@@ -53,7 +58,7 @@ def validate_twilio_request(f):
         else:
             return abort(403)
     return decorated_function
-def fizzBuzz(number):
+def fizz_buzz(number):
 	out = []
 	if(number == 0):
 		raise ValueError()
@@ -69,9 +74,10 @@ def fizzBuzz(number):
 			else:
 				out.append(toAppend)
 	return out
-
-
-
+def make_call(client, to_phone_number, delay):
+	sleep(delay)
+	call = client.calls.create(to=to_phone_number, from_=from_phone_number,url=endpoint_url)
+	print "Call SID:", call.sid
 
 
 
@@ -83,16 +89,22 @@ def index():
 	if request.method == 'POST':
 		try:
 			number = request.form['phonenumber']
+			if(request.form['seconds'] == '' or request.form['minutes'] == ''):
+				raise Exception("Delay Cannot be Blank, Try Again")
+			delay_seconds = int(request.form['seconds'])
+			delay_minutes = int(request.form['minutes'])
+			if(delay_minutes < 0 or delay_seconds < 0):
+				raise Exception("Invalid Delay, Try Again ")
+			delay = delay_seconds + delay_minutes*60
 			client = Client(os.environ.get('TWILIO_ACCOUNT_SID'), os.environ.get("TWILIO_AUTH_TOKEN"))
 			lookupNum = client.lookups.phone_numbers(number).fetch()
-			call = client.calls.create(to=lookupNum.phone_number, from_="+14074104685",url=endpoint_url)
-			success = "Called " + lookupNum.national_format
-			print call.sid
+			success = "Call to  " + lookupNum.national_format + " scheduled for " + request.form['minutes'] + " minutes and " + request.form['seconds'] + " seconds"
+			thread.start_new_thread(make_call,(client,lookupNum.phone_number, delay))
 		except Exception as ex:
-			print ex
 			if(type(ex) is TwilioRestException):
 				error = "Invalid Phone Number, Try again"
 			else:
+				# print ex
 				error = str(ex)
 	return render_template('index.html', error=error, success=success)
 
@@ -116,10 +128,9 @@ def process_gather():
 	response = VoiceResponse()
 	if 'Digits' in request.values:
 		inputString = request.values['Digits']
-		print 'input String = ' + inputString
 		try:
 			inputNum = int(inputString)
-			fbArr = fizzBuzz(inputNum)
+			fbArr = fizz_buzz(inputNum)
 			for i in fbArr:
 				response.say(str(i), voice='alice')
 		except ValueError:
