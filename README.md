@@ -61,6 +61,8 @@ git commit -m "deployment"
 git push heroku master
 
 ```
+To set up environment variables, you can access your app's settings through heroku and set them.
+
 ## Built With
 
 * [Flask](http://flask.pocoo.org/) - The web framework used
