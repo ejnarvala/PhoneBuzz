@@ -74,7 +74,6 @@ def fizz_buzz(number):
 			toAppend += 'Fizz'
 		if(i % 5 == 0):
 			toAppend += 'Buzz'
-
 		if(toAppend == ''):
 			out.append(i)
 		else:
@@ -164,6 +163,7 @@ def process_gather():
 			fbArr = fizz_buzz(inputNum)
 			for i in fbArr:
 				response.say(str(i), voice='alice') #just go through the array and speak it out
+			response.say("Goodbye", voice='alice')
 		except ValueError:
 			response.say("Invalid Input Entered", voice='alice')
 			response.redirect('/voice')
