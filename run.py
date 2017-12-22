@@ -62,11 +62,10 @@ def process_gather():
 		inputString = request.values['Digits']
 		print 'input String = ' + inputString
 		try:
-			inputNum = int(inputNum)
+			inputNum = int(inputString)
 			fbArr = fizzBuzz(inputNum)
 			for i in fbArr:
 				response.say(i)
-				response.pause(1)
 			return str(response)
 		except ValueError:
 			response.say("Invalid Input Entered", voice='alice')
