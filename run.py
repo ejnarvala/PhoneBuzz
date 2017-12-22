@@ -14,6 +14,7 @@ def validate_twilio_request(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         # Create an instance of the RequestValidator class
+        print os.environ.get('TWILIO_AUTH_TOKEN')
         validator = RequestValidator(os.environ.get('TWILIO_AUTH_TOKEN'))
 
         # Validate the request using its URL, POST data,
