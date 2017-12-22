@@ -99,7 +99,7 @@ def index():
 			#grab phone number, check if empty
 			number = request.form['phonenumber']
 			if(number == ''):
-				rasie Exception("No Phone Number Entered")
+				raise Exception("No Phone Number Entered")
 
 			#filter for only positive and negative numbers
 			num_filter = re.compile(r"[+-]?\d+")
