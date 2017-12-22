@@ -82,6 +82,11 @@ def fizz_buzz(number):
 
 
 #function called on a thread to delay and make call
+#threading might not be the most scale-able method of doing this
+#since many threads with long delays will have the processor idle for no real reason
+#but it is the simplest and works well for this aplication
+#Alternative: build a priority queue of calls based on their delay, scanning the end for when to execute then
+#call a thread to make the call
 def make_call(client, to_phone_number, delay):
 	sleep(delay)
 	call = client.calls.create(to=to_phone_number, from_=from_phone_number,url=endpoint_url)
