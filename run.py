@@ -1,7 +1,11 @@
 from flask import Flask, request, render_template, url_for, redirect
+from functools import wraps
 from twilio.twiml.voice_response import VoiceResponse, Gather
 from twilio.rest import Client
 from twilio.base.exceptions import TwilioRestException
+from twilio.request_validator import RequestValidator
+
+
 app = Flask(__name__)
 
 def fizzBuzz(number):
@@ -42,30 +46,31 @@ def index():
 @app.route("/voice", methods=['GET', 'POST'])
 def phone_buzz():
 	response = VoiceResponse()
+	gather = Gather(action='/process_gather')
+	response.say("Welcome to Phone Buzz", voice='alice')
+	response.pause(1)
+	gather.say("Please Enter a number and press pound to submit", voice='alice')
+	response.append(gather)
+	response.redirect('/voice')
+	return str(response)
+
+
+@app.route("/process_gather", methods=['GET', 'POST'])
+def process_gather():
+	response = VoiceResponse()
 	if 'Digits' in request.values:
 		inputString = request.values['Digits']
-		print inputString;
+		print 'input String = ' + inputString
 		try:
 			inputNum = int(inputNum)
-			print inputNum
+			fbArr = fizzBuzz(inputNum)
+			for i in fbArr:
+				response.say(i)
+				response.pause(1)
+			return str(response)
 		except ValueError:
-			response.say("Please Enter a Valid input")
-			response.redirect('/voice')
-		fbArr = fizzBuzz(inputNum)
-		for i in fbArr:
-			response.say(i)
-			response.pause(1)
-	else:
-		gather = Gather()
-
-		response.say("Welcome to Phone Buzz", voice='alice')
-		response.pause(1)
-		gather.say("Please Enter a number and press pound to submit", voice='alice')
-		response.append(gather)
-		response.redirect('/voice')
-		print str(response)
-		
-
+			response.say("Invalid Input Entered", voice='alice')
+	response.redirect('/voice')
 	return str(response)
 
 
