@@ -66,10 +66,9 @@ def process_gather():
 			fbArr = fizzBuzz(inputNum)
 			for i in fbArr:
 				response.say(i)
-			return str(response)
 		except ValueError:
 			response.say("Invalid Input Entered", voice='alice')
-	response.redirect('/voice')
+			response.redirect('/voice')
 	return str(response)
 
 
