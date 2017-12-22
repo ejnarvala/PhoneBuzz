@@ -65,20 +65,20 @@ def validate_twilio_request(f):
 #my very own fizzbuzz
 def fizz_buzz(number):
 	out = []
-	if(number == 0):
+	#check if negative or overflow
+	if (number <= 0) or (abs(number) > (1 << 31) - 1):
 		raise ValueError()
-	else:
-		for i in range(1,number+1):
-			toAppend = ''
-			if(i % 3 == 0):
-				toAppend += 'Fizz'
-			if(i % 5 == 0):
-				toAppend += 'Buzz'
+	for i in range(1,number+1):
+		toAppend = ''
+		if(i % 3 == 0):
+			toAppend += 'Fizz'
+		if(i % 5 == 0):
+			toAppend += 'Buzz'
 
-			if(toAppend == ''):
-				out.append(i)
-			else:
-				out.append(toAppend)
+		if(toAppend == ''):
+			out.append(i)
+		else:
+			out.append(toAppend)
 	return out
 
 
